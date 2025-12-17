@@ -5,157 +5,474 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>UzBooks — O'zbek kitoblari</title>
 
-  <!-- ====== SIZ YOZGAN ORIGINAL STYLE + QO‘SHIMCHALAR (O‘CHIRILMADI) ====== -->
   <style>
     :root{
-      --bg:#f2eadd;--text:#3a2e1f;--card:#fff;--accent:#8b5a2b;--accent-2:#c89f72;--muted:#6b5a4a;--glass:rgba(255,255,255,.6)
+      --bg: #f2eadd;
+      --text: #3a2e1f;
+      --card: #ffffff;
+      --accent: #8b5a2b;      /* brown */
+      --accent-2: #c89f72;    /* light brown */
+      --muted: #6b5a4a;
+      --glass: rgba(255,255,255,0.6);
     }
-    body.dark{
-      --bg:#14120f;--text:#e8ddcf;--card:#221b17;--accent:#b07a40;--accent-2:#d6b892;--muted:#cbb89f;--glass:rgba(255,255,255,.05)
+    body.dark {
+      --bg: #14120f;
+      --text: #e8ddcf;
+      --card: #221b17;
+      --accent: #b07a40;
+      --accent-2: #d6b892;
+      --muted: #cbb89f;
+      --glass: rgba(255,255,255,0.04);
     }
+
+    /* Base */
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);transition:.3s}
-    a{text-decoration:none;color:inherit}
-
-    header{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--card);box-shadow:0 6px 20px rgba(0,0,0,.08)}
-    .logo{font-weight:800;font-size:22px;color:var(--accent)}
-
-    /* ===== NAVBAR (DESKTOP + MOBILE) ===== */
-    .nav-links{display:flex;gap:14px}
-    .menu-btn{display:none;font-size:24px;background:none;border:0;cursor:pointer}
-
-    /* ===== SIDECART (SAVATCHA PANEL) ===== */
-    .side-cart{
-      position:fixed;top:0;right:-360px;width:340px;height:100vh;
-      background:var(--card);box-shadow:-8px 0 30px rgba(0,0,0,.25);
-      padding:18px;transition:.35s;z-index:100
+    body{
+      margin:0;
+      font-family: Inter, "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      transition:background .3s, color .3s;
+      line-height:1.45;
     }
-    .side-cart.open{right:0}
-    .cart-item{display:flex;gap:10px;margin:12px 0}
-    .cart-item img{width:60px;height:80px;object-fit:cover;border-radius:6px}
+    a{color:inherit;text-decoration:none}
 
-    /* ===== PRODUCTS ===== */
-    .products{padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
-    .card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.1)}
-    .thumb{width:100%;height:240px;object-fit:cover}
-    .meta{padding:14px}
-    .price{color:var(--accent);font-weight:800}
-    .actions{display:flex;gap:8px;margin-top:10px}
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:60;
+      background:linear-gradient(180deg, var(--card), rgba(0,0,0,0.02));
+      display:flex; align-items:center; gap:20px;
+      justify-content:space-between;
+      padding:18px 36px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.08);
+      backdrop-filter:blur(4px);
+    }
+    .logo{font-weight:800; font-size:22px; color:var(--accent); letter-spacing:1px}
+    .nav{
+      display:flex; gap:12px; align-items:center;
+    }
+    .search{
+      flex:1; max-width:560px; margin:0 20px;
+      display:flex; align-items:center;
+    }
+    .search input{
+      width:100%; padding:12px 16px; border-radius:12px;
+      border:2px solid var(--accent-2); background:var(--glass); color:var(--text);
+      outline:none; font-size:15px;
+    }
 
-    /* ===== MODAL ===== */
-    .modal{
-      position:fixed;inset:0;background:rgba(0,0,0,.55);
-      display:none;align-items:center;justify-content:center;z-index:200
+    .btn{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:10px; border:0;
+      cursor:pointer; background:var(--accent); color:#fff; font-weight:600;
+      box-shadow:0 6px 18px rgba(0,0,0,0.12);
+      transition:transform .18s ease, background .18s;
     }
-    .modal.open{display:flex}
-    .modal-box{
-      background:var(--card);max-width:420px;width:90%;border-radius:14px;padding:18px
-    }
-    .modal-box img{width:100%;border-radius:10px;margin-bottom:10px}
+    .btn.secondary{background:transparent; color:var(--muted); border:1px solid rgba(0,0,0,0.05)}
+    .btn:active{transform:translateY(1px)}
+    .icon{font-size:16px}
 
-    /* ===== RESPONSIVE ===== */
-    @media(max-width:768px){
-      .menu-btn{display:block}
-      .nav-links{
-        display:none;position:absolute;top:60px;right:16px;
-        background:var(--card);flex-direction:column;padding:14px;border-radius:12px
-      }
+    /* Showcase (hero) */
+    .showcase{
+      display:flex; gap:32px; align-items:center;
+      padding:64px 56px; border-radius:12px;
+      background:linear-gradient(135deg, var(--accent-2), var(--accent));
+      color:#fff; margin:18px 36px; box-shadow:0 20px 60px rgba(139,90,43,0.18);
     }
+    .showcase-left{max-width:60%}
+    .showcase h1{font-size:44px; margin:0 0 12px; line-height:1.02}
+    .showcase p{margin:0 0 18px; font-size:18px; opacity:0.95}
+    .hero-cta{display:flex; gap:12px}
+    .hero-cta .btn{background:#fff;color:var(--accent); font-weight:700}
+    .hero-cta .btn.secondary{background:transparent;color:#fff; border:1px solid rgba(255,255,255,0.18)}
+    .showcase-right img{width:380px; border-radius:14px; box-shadow:0 18px 40px rgba(0,0,0,0.35); transform-origin:center; animation:float 4s ease-in-out infinite}
+
+    /* Main layout */
+    .main{display:flex; gap:28px; padding:44px 56px}
+    .sidebar{
+      width:280px; background:var(--card); padding:18px; border-radius:14px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.06)
+    }
+    .sidebar h3{margin:6px 0 12px; color:var(--accent)}
+    .cat{display:flex; flex-direction:column; gap:10px}
+    .cat button{
+      text-align:left; padding:10px 12px; border-radius:10px; border:0;
+      background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01)); cursor:pointer;
+    }
+    .promo{margin-top:18px; border-radius:12px; overflow:hidden}
+    .promo img{width:100%; display:block}
+
+    /* Products */
+    .products{flex:1; display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:22px}
+    .card{
+      background:var(--card); border-radius:14px; overflow:hidden; display:flex; flex-direction:column;
+      box-shadow:0 10px 30px rgba(0,0,0,0.12); transition:transform .28s, box-shadow .28s;
+    }
+    .card:hover{transform:translateY(-10px) scale(1.01); box-shadow:0 18px 40px rgba(0,0,0,0.2)}
+    .card .thumb{height:260px; background:#eee; display:block}
+    .card .meta{padding:16px 16px 18px; display:flex; flex-direction:column; gap:8px}
+    .meta h4{margin:0; font-size:18px}
+    .meta p{margin:0; font-size:13px; color:var(--muted)}
+    .meta .price{margin-top:auto; font-weight:800; color:var(--accent)}
+    .meta .actions{display:flex; gap:10px; margin-top:10px}
+    .action-like{flex:1; background:transparent; border:1px solid rgba(0,0,0,0.06); padding:9px; border-radius:10px; cursor:pointer}
+    .add-btn{flex:1; background:var(--accent); color:#fff; border-radius:10px; padding:9px; border:0; font-weight:700; cursor:pointer}
+
+    /* Featured / About sections */
+    .section{padding:44px 56px; display:grid; gap:18px}
+    .featured{display:grid; grid-template-columns:1fr 280px; gap:20px; align-items:center}
+    .featured .list{display:grid; gap:14px}
+    .about{display:flex; gap:20px; align-items:center}
+    .about img{width:220px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.12)}
+
+    /* Footer */
+    footer{background:var(--card); padding:36px 56px; margin-top:24px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; box-shadow:0 -8px 30px rgba(0,0,0,0.06)}
+    footer h4{color:var(--accent); margin:0 0 10px}
+    footer p, footer a{color:var(--muted); margin:6px 0; font-size:14px}
+
+    /* small screens */
+    @media(max-width:980px){
+      .showcase{flex-direction:column; padding:36px}
+      .showcase-right img{width:260px}
+      .main{flex-direction:column; padding:26px}
+      .sidebar{width:100%}
+      .featured{grid-template-columns:1fr}
+      footer{grid-template-columns:1fr}
+      .search{max-width:360px}
+    }
+
+    @media(max-width:560px){
+      header{padding:12px 16px}
+      .logo{font-size:18px}
+      .search{display:none}
+      .showcase h1{font-size:28px}
+      .showcase-right img{width:200px}
+      .products{grid-template-columns:repeat(auto-fill, minmax(180px,1fr))}
+    }
+
+    /* Animations */
+    @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
   </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
-<header>
-  <div class="logo">UzBooks</div>
+  <!-- Header -->
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">UzBooks</div>
+      <nav style="display:flex;gap:12px;align-items:center">
+        <a href="#" style="font-weight:600;color:var(--muted)">Home</a>
+        <a href="#featured" style="font-weight:600;color:var(--muted)">Yangi</a>
+        <a href="#about" style="font-weight:600;color:var(--muted)">Biz haqimizda</a>
+      </nav>
+    </div>
 
-  <nav class="nav-links" id="navLinks">
-    <a href="#">Home</a>
-    <a href="#">Yangi</a>
-    <a href="#">Biz haqimizda</a>
-  </nav>
+    <div class="search">
+      <input id="searchInput" placeholder="Izlash... (Navoiy, roman, tarix...)" aria-label="search" />
+    </div>
 
-  <div>
-    <button class="menu-btn" id="menuBtn">☰</button>
-    <button onclick="toggleCart()">🛒 (<span id="cartCount">0</span>)</button>
-  </div>
-</header>
+    <div class="nav">
+      <button class="btn secondary" id="themeBtn" title="Toggle dark/light">🌙 Dark</button>
+      <button class="btn" id="cartBtn">🛒 Savat (<span id="cartCount">0</span>)</button>
+    </div>
+  </header>
 
-<!-- ===== PRODUCTS (SENING MA’LUMOTLARING) ===== -->
-<section class="products">
-  <div class="card">
-    <img class="thumb" src="https://images.uzum.uz/cj77b7l6sfhggrk1qe80/original.jpg">
-    <div class="meta">
-      <h4>Alisher Navoiy — Xamsa</h4>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-      <div class="price">89 000 so'm</div>
-      <div class="actions">
-        <button onclick="openModal('Alisher Navoiy — Xamsa', this)">🔍 Batafsil</button>
-        <button onclick="addToCart('Xamsa',89000,this)">➕ Savatga</button>
+  <!-- Showcase / Hero -->
+  <section class="showcase" aria-label="hero">
+    <div class="showcase-left">
+      <h1>O'zbek adabiyotining eng yaxshi to'plami</h1>
+      <p>Alisher Navoiy, Abdulla Oripov, Abdulla Qodiriy va boshqa klassiklar — sifatli nashrlar, tez yetkazib berish.</p>
+      <div class="hero-cta">
+        <button class="btn" onclick="scrollToProducts()">Do'konni ko'rish</button>
+        <button class="btn secondary" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Biz haqimizda</button>
       </div>
     </div>
-  </div>
-</section>
+    <div class="showcase-right">
+      <img src="https://images.theconversation.com/files/45159/original/rptgtpxd-1396254731.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=1356&h=668&fit=crop" alt="stack of books" />
+    </div>
+  </section>
 
-<!-- ===== SIDECART ===== -->
-<div class="side-cart" id="sideCart">
-  <h3>Savatcha</h3>
-  <div id="cartItems"></div>
-  <strong>Jami: <span id="cartTotal">0</span> so'm</strong>
-</div>
+  <!-- Main content -->
+  <main class="main" id="main">
+    <aside class="sidebar" aria-label="filters">
+      <h3>Kategoriyalar</h3>
+      <div class="cat">
+        <button onclick="filterCategory('all')">Barchasi</button>
+        <button onclick="filterCategory('Adabiyot')">Adabiyot</button>
+        <button onclick="filterCategory('Tarix')">Tarix</button>
+        <button onclick="filterCategory('She' + \"riyat\")">She'riyat</button>
+        <button onclick="filterCategory('Roman')">Romanlar</button>
+        <button onclick="filterCategory('Darslik')">Darsliklar</button>
+         <button onclick="filterCategory('Psixologik')">Psixologik Kitoblar</button>
+      </div>
 
-<!-- ===== MODAL ===== -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <img id="modalImg">
-    <h3 id="modalTitle"></h3>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, dolorem.</p>
-    <button onclick="closeModal()">Yopish</button>
-  </div>
-</div>
+      <div class="promo" style="margin-top:16px;">
+        <img src="https://images.uzum.uz/cj77b7l6sfhggrk1qe80/original.jpg" alt="promo" />
+      </div>
+    </aside>
 
-<script>
-  /* ===== MOBILE MENU ===== */
-  const menuBtn=document.getElementById('menuBtn');
-  const navLinks=document.getElementById('navLinks');
-  menuBtn.onclick=()=>{
-    navLinks.style.display=navLinks.style.display==='flex'?'none':'flex'
-  }
+    <section class="products" id="products" aria-live="polite">
+      <!-- Product cards (JS will populate as well) -->
+      <article class="card" data-category="Adabiyot">
+        <img class="thumb" src="https://images.uzum.uz/cj77b7l6sfhggrk1qe80/original.jpg" alt="Xamsa" />
+        <div class="meta">
+          <h4>Alisher Navoiy - Xamsa</h4>
+          <p>Adabiyot · Klassik asar</p>
+          <div class="price">89 000 so'm</div>
+          <div class="actions">
+            <button class="action-like" title="Batafsil">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('Alisher Navoiy — Xamsa',89000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
 
-  /* ===== CART ===== */
-  const sideCart=document.getElementById('sideCart');
-  const cartItems=document.getElementById('cartItems');
-  const cartCount=document.getElementById('cartCount');
-  const cartTotal=document.getElementById('cartTotal');
-  let cart=[];
+      <article class="card" data-category="Roman">
+        <img class="thumb" src="https://assets.asaxiy.uz/product/items/desktop/5e118b1886de8b708eceb927367bb7a72025040916521124370MiXRPHig5b.jpg" alt="O'tkan Kunlar" />
+        <div class="meta">
+          <h4>O'tkan Kunlar - Abdulla Qodiriy</h4>
+          <p>Roman · O'zbekiston adabiyoti</p>
+          <div class="price">65 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('O\\'tkan Kunlar — Abdulla Qodiriy',65000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
 
-  function toggleCart(){sideCart.classList.toggle('open')}
+      <article class="card" data-category="Psixologik">
+        <img class="thumb" src="https://images.uzum.uz/csq8gn3vgbkpg1nm1bng/original.jpg" alt="Men" />
+        <div class="meta">
+          <h4>Men - Fotix Duman</h4>
+          <p>Psixologik · Bas qil ey nafs</p>
+          <div class="price">60 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('Men - Fotix Duman',72000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
 
-  function addToCart(title,price,btn){
-    const img=btn.closest('.card').querySelector('img').src;
-    cart.push({title,price,img});
-    renderCart();toggleCart();
-  }
+      <article class="card" data-category="Psixologik">
+        <img class="thumb" src="https://telegra.ph/file/10b17bec21d964067d8d0.jpg" alt="Atham Amin Nemutlu" />
+        <div class="meta">
+          <h4>Nasiba niyatga bogliq - Atham Amin Nemutlu</h4>
+          <p>Psixologik · Zamonaviy</p>
+          <div class="price">40 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('Atham Amin Nemutlu — She\\'rlar',40000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
 
-  function renderCart(){
-    cartItems.innerHTML='';let total=0;
-    cart.forEach(i=>{
-      total+=i.price;
-      cartItems.innerHTML+=`<div class="cart-item"><img src="${i.img}"><div>${i.title}<br>${i.price} so'm</div></div>`
-    })
-    cartCount.textContent=cart.length;
-    cartTotal.textContent=total.toLocaleString();
-  }
+      <article class="card" data-category="Darslik">
+        <img class="thumb" src="https://images.uzum.uz/cs2lh4ri153t30uotndg/original.jpg" alt="Darslik" />
+        <div class="meta">
+          <h4>IDC - 1-nashr</h4>
+          <p>Darslik · O'quv materiallari</p>
+          <div class="price">35 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('IDC - 1-nashr',35000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
 
-  /* ===== MODAL ===== */
-  const modal=document.getElementById('modal');
-  function openModal(title,btn){
-    modal.classList.add('open');
-    document.getElementById('modalTitle').textContent=title;
-    document.getElementById('modalImg').src=btn.closest('.card').querySelector('img').src;
-  }
-  function closeModal(){modal.classList.remove('open')}
-</script>
+      <article class="card" data-category="Roman">
+        <img class="thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmvX3oIie74MFznfgTlS4KWsSU0GRT-OnNjw&s" alt="Roman 2" />
+        <div class="meta">
+          <h4>Yashamoq - Yuy Hua</h4>
+          <p>Roman · Zamonaviy yozuv</p>
+          <div class="price">55 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('Yashamoq',58000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
 
+      <article class="card" data-category="Tarix">
+        <img class="thumb" src="https://hilolnashr.uz/image/cache/catalog/001-Kitoblar/003_boshqalar/002_badiy/2022/yonayotgan-buxoro-web-550x550h.jpg" alt="Tarixiy" />
+        <div class="meta">
+          <h4>Yonayotgan Buxoro - Yavuz Bahodiro'g'li</h4>
+          <p>Tarix · Zamonaviy yozuv</p>
+          <div class="price">55 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('Yonayotgan Buxoro',58000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-category="She'riyat">
+        <img class="thumb" src="https://hilolnashr.uz/image/cache/catalog/boshqa-kitoblar/ozbegim-550x550h.jpg" alt="She'riyat" />
+        <div class="meta">
+          <h4>O'Zbegim - Erkin Vohidov</h4>
+          <p>She'riyat · O'zbek kitoblari</p>
+          <div class="price">20 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('Ozbegim',58000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-category="Adabiyot">
+        <img class="thumb" src="https://sarmoya-books.uz/wp-content/uploads/2025/06/photo_2025-06-25_20-34-40-417x660.jpg" alt="Adabiyot" />
+        <div class="meta">
+          <h4>Ikki eshik orasi - O'tkir Hoshimov</h4>
+          <p>Adabiyot · O'zbek klassik kitobi</p>
+          <div class="price">56 000 so'm</div>
+          <div class="actions">
+            <button class="action-like">🔍 Batafsil</button>
+            <button class="add-btn" onclick="addToCart('Ikki eshik orasi',58000)">Savatga qo'shish</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- more cards can be added similarly -->
+    </section>
+  </main>
+
+  <!-- Featured & About -->
+  <section id="featured" class="section">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <h2 style="margin:0">Yangi va mashhur</h2>
+      <a href="#products" style="font-weight:700; color:var(--accent)">Hammasini ko'rish →</a>
+    </div>
+
+    <div class="featured">
+      <div class="list">
+        <div style="display:flex; gap:12px; align-items:center; padding:12px; background:var(--card); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.06)">
+          <img src="https://i.pinimg.com/736x/21/12/bb/2112bbbf7db40b8d5212becad615e629.jpg" alt="author" style="width:84px; height:110px; object-fit:cover; border-radius:8px" />
+          <div>
+            <strong>To'plam: Klassiklar</strong>
+            <div style="color:var(--muted); margin-top:6px">Navoiy, Qodiriy va boshqalar</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:center; padding:12px; background:var(--card); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.06)">
+          <img src="https://i.pinimg.com/736x/94/50/09/945009a806ec57bdeecaad2228fef380.jpg" alt="author" style="width:84px; height:110px; object-fit:cover; border-radius:8px" />
+          <div>
+            <strong>Yangi nashrlar — 2025</strong>
+            <div style="color:var(--muted); margin-top:6px">Yangilangan to‘plam</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="background:var(--card); padding:18px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.06)">
+        <h3 style="margin-top:0">Maxsus taklif</h3>
+        <p style="color:var(--muted)">Har oyda 10% chegirma — ro‘yxatdan o‘tganlarga. Sifatli nashrlar va tez yetkazib berish.</p>
+        <button class="btn" style="margin-top:12px">Ro'yxatdan o'tish</button>
+      </aside>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <div class="about">
+      <div>
+        <h3 style="margin:0 0 10px">Biz haqimizda</h3>
+        <p style="max-width:720px; color:var(--muted)">UzBooks — Oʻzbek tilidagi kitoblarni targʻib qiluvchi onlayn doʻkon. Biz klassik va zamonaviy asarlar, darsliklar va tarixi kitoblarni yetkazib beramiz. Maqsadimiz — oʻz adabiyotimizni kengroq auditoriyaga yetkazish.</p>
+      </div>
+      <img src="https://i.pinimg.com/736x/8b/0f/09/8b0f09abe132aa03ca11967ee83cb82d.jpg" alt="bookshop" />
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div>
+      <h4>UzBooks</h4>
+      <p>Adabiyot va bilim uchun sifatli kitoblar.</p>
+      <p style="margin-top:8px; color:var(--muted)">© <span id="year"></span> UzBooks</p>
+    </div>
+
+    <div>
+      <h4>Foydali</h4>
+      <a href="#">Yuk tashish</a>
+      <a href="#">Toʻlov usullari</a>
+      <a href="#">Savol-javob</a>
+    </div>
+
+    <div>
+      <h4>Kontakt</h4>
+      <p style="color:var(--muted)">email: info@uzbooks.uz</p>
+      <p style="color:var(--muted)">tel: +998 90 123 45 67</p>
+    </div>
+  </footer>
+
+  <script>
+    // small JS: dark toggle, cart counter, filter and search
+    const themeBtn = document.getElementById('themeBtn');
+    const cartCountEl = document.getElementById('cartCount');
+    const cartBtn = document.getElementById('cartBtn');
+    const productsEl = document.getElementById('products');
+    const searchInput = document.getElementById('searchInput');
+
+    // initial
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Dark mode: respect saved preference
+    const savedTheme = localStorage.getItem('uzbooks_theme');
+    if(savedTheme === 'dark'){ document.body.classList.add('dark'); themeBtn.textContent = '☀️ Light' }
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      themeBtn.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+      localStorage.setItem('uzbooks_theme', isDark ? 'dark' : 'light');
+    });
+
+    // Cart
+    let cart = [];
+    window.addToCart = function(title, price){
+      cart.push({title, price});
+      cartCountEl.textContent = cart.length;
+      // small visual feedback
+      cartBtn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)'}], { duration: 250 });
+    };
+
+    cartBtn.addEventListener('click', () => {
+      if(cart.length === 0) {
+        alert("Savat bo'sh — iltimos biror kitob qo'shing.");
+        return;
+      }
+      // quick cart summary
+      const total = cart.reduce((s,i)=>s+i.price,0);
+      const titles = cart.map((c,i)=>`${i+1}. ${c.title} — ${c.price.toLocaleString()} so'm`).join('\n');
+      alert(`Savat (${cart.length}) — Jami: ${total.toLocaleString()} so'm\n\n` + titles);
+    });
+
+    // Filter by category
+    window.filterCategory = function(cat){
+      const cards = productsEl.querySelectorAll('.card');
+      cards.forEach(card=>{
+        const c = card.dataset.category || 'all';
+        if(cat === 'all' || cat === c) card.style.display = '';
+        else card.style.display = 'none';
+      });
+    };
+
+    // Search
+    searchInput.addEventListener('input', (e)=>{
+      const q = e.target.value.trim().toLowerCase();
+      const cards = productsEl.querySelectorAll('.card');
+      cards.forEach(card=>{
+        const title = card.querySelector('h4').textContent.toLowerCase();
+        const cat = (card.dataset.category || '').toLowerCase();
+        if(!q || title.includes(q) || cat.includes(q)) card.style.display = '';
+        else card.style.display = 'none';
+      });
+    });
+
+    // Scroll to products helper
+    window.scrollToProducts = function(){
+      document.getElementById('products').scrollIntoView({behavior:'smooth', block:'start'});
+    };
+
+    // keyboard: press "g" to go to showcase (fun little easter egg)
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'g') document.querySelector('.showcase')?.scrollIntoView({behavior:'smooth'}) })
+  </script>
 </body>
 </html>
