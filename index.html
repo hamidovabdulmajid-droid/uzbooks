@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UzBooks — O'zbek kitoblari</title>
+
+  <!-- ====== SIZ YOZGAN ORIGINAL STYLE + QO‘SHIMCHALAR (O‘CHIRILMADI) ====== -->
+  <style>
+    :root{
+      --bg:#f2eadd;--text:#3a2e1f;--card:#fff;--accent:#8b5a2b;--accent-2:#c89f72;--muted:#6b5a4a;--glass:rgba(255,255,255,.6)
+    }
+    body.dark{
+      --bg:#14120f;--text:#e8ddcf;--card:#221b17;--accent:#b07a40;--accent-2:#d6b892;--muted:#cbb89f;--glass:rgba(255,255,255,.05)
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);transition:.3s}
+    a{text-decoration:none;color:inherit}
+
+    header{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--card);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+    .logo{font-weight:800;font-size:22px;color:var(--accent)}
+
+    /* ===== NAVBAR (DESKTOP + MOBILE) ===== */
+    .nav-links{display:flex;gap:14px}
+    .menu-btn{display:none;font-size:24px;background:none;border:0;cursor:pointer}
+
+    /* ===== SIDECART (SAVATCHA PANEL) ===== */
+    .side-cart{
+      position:fixed;top:0;right:-360px;width:340px;height:100vh;
+      background:var(--card);box-shadow:-8px 0 30px rgba(0,0,0,.25);
+      padding:18px;transition:.35s;z-index:100
+    }
+    .side-cart.open{right:0}
+    .cart-item{display:flex;gap:10px;margin:12px 0}
+    .cart-item img{width:60px;height:80px;object-fit:cover;border-radius:6px}
+
+    /* ===== PRODUCTS ===== */
+    .products{padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+    .card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+    .thumb{width:100%;height:240px;object-fit:cover}
+    .meta{padding:14px}
+    .price{color:var(--accent);font-weight:800}
+    .actions{display:flex;gap:8px;margin-top:10px}
+
+    /* ===== MODAL ===== */
+    .modal{
+      position:fixed;inset:0;background:rgba(0,0,0,.55);
+      display:none;align-items:center;justify-content:center;z-index:200
+    }
+    .modal.open{display:flex}
+    .modal-box{
+      background:var(--card);max-width:420px;width:90%;border-radius:14px;padding:18px
+    }
+    .modal-box img{width:100%;border-radius:10px;margin-bottom:10px}
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:768px){
+      .menu-btn{display:block}
+      .nav-links{
+        display:none;position:absolute;top:60px;right:16px;
+        background:var(--card);flex-direction:column;padding:14px;border-radius:12px
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="logo">UzBooks</div>
+
+  <nav class="nav-links" id="navLinks">
+    <a href="#">Home</a>
+    <a href="#">Yangi</a>
+    <a href="#">Biz haqimizda</a>
+  </nav>
+
+  <div>
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <button onclick="toggleCart()">🛒 (<span id="cartCount">0</span>)</button>
+  </div>
+</header>
+
+<!-- ===== PRODUCTS (SENING MA’LUMOTLARING) ===== -->
+<section class="products">
+  <div class="card">
+    <img class="thumb" src="https://images.uzum.uz/cj77b7l6sfhggrk1qe80/original.jpg">
+    <div class="meta">
+      <h4>Alisher Navoiy — Xamsa</h4>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+      <div class="price">89 000 so'm</div>
+      <div class="actions">
+        <button onclick="openModal('Alisher Navoiy — Xamsa', this)">🔍 Batafsil</button>
+        <button onclick="addToCart('Xamsa',89000,this)">➕ Savatga</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SIDECART ===== -->
+<div class="side-cart" id="sideCart">
+  <h3>Savatcha</h3>
+  <div id="cartItems"></div>
+  <strong>Jami: <span id="cartTotal">0</span> so'm</strong>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <img id="modalImg">
+    <h3 id="modalTitle"></h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, dolorem.</p>
+    <button onclick="closeModal()">Yopish</button>
+  </div>
+</div>
+
+<script>
+  /* ===== MOBILE MENU ===== */
+  const menuBtn=document.getElementById('menuBtn');
+  const navLinks=document.getElementById('navLinks');
+  menuBtn.onclick=()=>{
+    navLinks.style.display=navLinks.style.display==='flex'?'none':'flex'
+  }
+
+  /* ===== CART ===== */
+  const sideCart=document.getElementById('sideCart');
+  const cartItems=document.getElementById('cartItems');
+  const cartCount=document.getElementById('cartCount');
+  const cartTotal=document.getElementById('cartTotal');
+  let cart=[];
+
+  function toggleCart(){sideCart.classList.toggle('open')}
+
+  function addToCart(title,price,btn){
+    const img=btn.closest('.card').querySelector('img').src;
+    cart.push({title,price,img});
+    renderCart();toggleCart();
+  }
+
+  function renderCart(){
+    cartItems.innerHTML='';let total=0;
+    cart.forEach(i=>{
+      total+=i.price;
+      cartItems.innerHTML+=`<div class="cart-item"><img src="${i.img}"><div>${i.title}<br>${i.price} so'm</div></div>`
+    })
+    cartCount.textContent=cart.length;
+    cartTotal.textContent=total.toLocaleString();
+  }
+
+  /* ===== MODAL ===== */
+  const modal=document.getElementById('modal');
+  function openModal(title,btn){
+    modal.classList.add('open');
+    document.getElementById('modalTitle').textContent=title;
+    document.getElementById('modalImg').src=btn.closest('.card').querySelector('img').src;
+  }
+  function closeModal(){modal.classList.remove('open')}
+</script>
+
+</body>
+</html>
